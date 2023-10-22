@@ -42,15 +42,17 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import { useSession } from "next-auth/react"
 import { User } from "@prisma/client"
 import { Election } from "@/lib/types/Election"
-
-
+import { useRouter, usePathname } from 'next/navigation'
+import { useSelectedElection } from "@/lib/context/ElectionContext"
 
 type Team = {
   label: string
@@ -68,6 +70,8 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
   const [electionName, setElectionName] = React.useState("");
   const [electionDate, setElectionDate] = React.useState("");
   const [electionCampus, setElectionCampus] = React.useState("");
+  const router = useRouter();
+  const pathname = usePathname();
   const [groups, setGroups] = React.useState([
     {
       label: "Your elections",
@@ -88,9 +92,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
       ],
     },
   ])
-  const [selectedTeam, setSelectedTeam] = React.useState<Team>(
-    groups[0].teams[0]
-  )
+  const { selectedElection, setSelectedElection } = useSelectedElection() as { selectedElection: Election | null, setSelectedElection: (value: any) => {} };
 
   React.useEffect(() => {
     fetch('/api/admin/elections')
@@ -160,13 +162,9 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
             className={cn("w-[200px] justify-between", className)}
           >
             <Avatar className="mr-2 h-5 w-5">
-              <AvatarImage
-                src={`https://avatar.vercel.sh/${selectedTeam.value}.png`}
-                alt={selectedTeam.label}
-              />
               <AvatarFallback>SC</AvatarFallback>
             </Avatar>
-            {selectedTeam.label}
+            {pathname === "/admin" ? "Select Election" : (selectedElection as any)?.label}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -181,8 +179,9 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                     <CommandItem
                       key={team.value}
                       onSelect={() => {
-                        setSelectedTeam(team)
+                        setSelectedElection(team)
                         setOpen(false)
+                        router.push(`/admin/${team.value}`)
                       }}
                       className="text-sm"
                     >
@@ -198,7 +197,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                       <CheckIcon
                         className={cn(
                           "ml-auto h-4 w-4",
-                          selectedTeam.value === team.value
+                          selectedElection?.id === team.value
                             ? "opacity-100"
                             : "opacity-0"
                         )}
@@ -242,7 +241,19 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">Campus</Label>
-              <Input id="campus" type="text" value={electionCampus} onChange={(e) => setElectionCampus(e.target.value)} />
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a campus" className="w-full" />
+                </SelectTrigger>
+                <SelectContent className="w-full">
+                  <SelectGroup>
+                  <SelectItem value="bergen">Bergen</SelectItem>
+                  <SelectItem value="oslo">Oslo</SelectItem>
+                  <SelectItem value="stavanger">Stavanger</SelectItem>
+                  <SelectItem value="trondheim">Trondheim</SelectItem>
+                </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="date">Date</Label>

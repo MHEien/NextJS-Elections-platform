@@ -1,9 +1,12 @@
 import { DataTable } from "./components/VoterTable";
+import { getAllVotersWithElections } from "./get-voters";
 
 
-export default function VoterPage() {
+export default async function VoterPage() {
+
+    const voters = await getAllVotersWithElections();
 
     return (
-        <DataTable />
+        <DataTable voters={voters} />
     )
 }

@@ -45,6 +45,11 @@ export interface User {
     role: Role;
   }
 
+  export interface VotersWithElections extends User {
+    votedElections: Election[];
+    managedElections: Election[]; // add this line
+  }
+
 export enum Role {
   ADMIN,
   VOTER,

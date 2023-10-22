@@ -1,8 +1,17 @@
 import { MainNav } from "./main-nav";
 import TeamSwitcher from "./team-switcher";
 import { UserNav } from "./user-nav";
+import { ModeToggle } from "@/components/ModeToggle";
+import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
-export default function Navigation() {
+export default async function Navigation() {
+
+  const session = await getServerSession(authOptions);
+
+  const role = session?.user?.role;
+
     return (
         <>
           <div className="hidden flex-col md:flex">
@@ -11,6 +20,15 @@ export default function Navigation() {
                 <TeamSwitcher />
                 <MainNav className="mx-6" />
                 <div className="ml-auto flex items-center space-x-4">
+                  {role === "ADMIN" && (
+                        <Link
+                        href="/admin"
+                        className="text-sm font-medium transition-colors hover:text-primary"
+                      >
+                        Admin
+                      </Link>
+                  )}
+                  <ModeToggle />
                   <UserNav />
                 </div>
               </div>

@@ -47,26 +47,6 @@ import { Label } from "@/components/ui"
 import { UserDetailsDialog } from "./UserDetailsDialog"
 
 
-const data: User[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "jdoe@me.com",
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "Jane Doe",
-    email: "jdoe@me.com",
-    status: "inactive",
-  },
-  {
-    id: "3",
-    name: "John Doe",
-    email: "jdoe@me.com",
-    status: "active",
-  }
-]
 
 
 export const getColumns = (handleViewDetails: (id: string) => void): ColumnDef<User>[] => [
@@ -134,7 +114,7 @@ export const getColumns = (handleViewDetails: (id: string) => void): ColumnDef<U
   },
 ]
 
-export function DataTable() {
+export function DataTable({ voters }: { voters: User[]}) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -147,7 +127,7 @@ export function DataTable() {
   const [viewUserDetails, setViewUserDetails] = React.useState(false)
   const columnsArray = getColumns(handleViewDetails)
   const table = useReactTable({
-    data,
+    data: voters,
     columns: columnsArray,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -169,7 +149,7 @@ export function DataTable() {
     setSelectedUserId(userId);
 }
 
-
+const selectedUser = voters.find(user => user.id === selectedUserId) ?? voters[0];
   return (
     <Dialog open={viewUserDetails} onOpenChange={setViewUserDetails}>
     <div className="w-full">
@@ -182,6 +162,13 @@ export function DataTable() {
           }
           className="max-w-sm"
         />
+        {table.getFilteredSelectedRowModel().rows.length > 0 && (
+          <>
+          <Button variant="destructive" className="ml-2">
+            Delete Voters
+          </Button>
+          </>
+        )}
             <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="ml-auto">
@@ -284,7 +271,7 @@ export function DataTable() {
             </div>
         </div>
     </div>
-    <UserDetailsDialog userId={selectedUserId} />
+    <UserDetailsDialog user={selectedUser} />
     </Dialog>
   )
 }
