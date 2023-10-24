@@ -10,11 +10,14 @@ export function MainNav({
 }: React.HTMLAttributes<HTMLElement>) {
 
   const pathname = usePathname()
-  const { selectedElection, setSelectedElection } = useSelectedElection()
-  const handleOverviewClick = () => {
-    setSelectedElection(null);
-  };
+  const { selectedElection } = useSelectedElection()
 
+  const getLinkClass = (href: string) => {
+    if (pathname === href) {
+      return "text-sm font-medium transition-colors hover:text-primary"
+    }
+    return "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+  }
 
   return (
     <nav
@@ -26,13 +29,13 @@ export function MainNav({
       <Link
       //Should lead to /admin/id, in case we are currently on i.e /admin/id/voters
         href={`/admin/${(selectedElection as any).value}`}
-        className="text-sm font-medium transition-colors hover:text-primary"
+        className={getLinkClass(`/admin/${(selectedElection as any).value}`)}
       >
         Overview
       </Link>
       <Link
         href={`/admin/${(selectedElection as any).value}/sessions`}
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        className={getLinkClass(`/admin/${(selectedElection as any).value}/sessions`)}
       >
         Sessions
       </Link>
@@ -40,13 +43,13 @@ export function MainNav({
       )}
       <Link
         href={`/admin/${selectedElection ? (selectedElection as any).value : ""}/voters`}
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        className={getLinkClass(`/admin/${selectedElection ? (selectedElection as any).value : ""}/voters`)}
       >
         Voters
       </Link>
       <Link
         href={`/admin/${selectedElection ? (selectedElection as any).value : ""}/candidates`}
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        className={getLinkClass(`/admin/${selectedElection ? (selectedElection as any).value : ""}/candidates`)}
       >
         Users & Access
       </Link>

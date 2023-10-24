@@ -12,7 +12,7 @@ import { AreaChart } from 'lucide-react';
 
 export default function Dashboard() {
   return (
-    <div className="px-4 py-6 dark:bg-black">
+    <div className="px-4 py-6">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
           <CardContent>

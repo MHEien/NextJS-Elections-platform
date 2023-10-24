@@ -50,9 +50,11 @@ import {
 } from "@/components/ui/select"
 import { useSession } from "next-auth/react"
 import { User } from "@prisma/client"
-import { Election } from "@/lib/types/Election"
+import { Election,  } from "@/lib/types/Election"
 import { useRouter, usePathname } from 'next/navigation'
 import { useSelectedElection } from "@/lib/context/ElectionContext"
+import { VotersWithElections } from "@/lib/types/Election"
+import { useToast } from "@/components/ui/use-toast"
 
 type Team = {
   label: string
@@ -66,12 +68,23 @@ interface TeamSwitcherProps extends PopoverTriggerProps {}
 export default function TeamSwitcher({ className }: TeamSwitcherProps) {
   const [open, setOpen] = React.useState(false)
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
-  const { data: session } = useSession()
   const [electionName, setElectionName] = React.useState("");
   const [electionDate, setElectionDate] = React.useState("");
   const [electionCampus, setElectionCampus] = React.useState("");
+
+
+
+  const { data: session } = useSession()
+
+  const isAdmin = session?.user?.role === 'ADMIN';
+
+  
+  const { toast } = useToast()
+
   const router = useRouter();
   const pathname = usePathname();
+
+
   const [groups, setGroups] = React.useState([
     {
       label: "Your elections",
@@ -98,31 +111,39 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
     fetch('/api/admin/elections')
         .then(response => response.json())
         .then(data => {
-            console.log('Data:', data)
-            const yourElections = data.userElections.filter((election: Election) => election.managers.some((manager: any) => manager.id === session?.user.id));
-            const otherElections = data.allElections.filter((election: Election) => !election.managers.some((manager: any) => manager.id === session?.user.id));
-            
-            setGroups([
-                {
-                    label: "Your elections",
-                    teams: yourElections.map((election: any) => ({
-                        label: election.label,
-                        value: election.value,
-                    })),
-                },
-                {
-                    label: "Other elections",
-                    teams: otherElections.map((election: any) => ({
-                        label: election.label,
-                        value: election.value,
-                    })),
-                },
-            ]);
+          //Response example: { myElections: [election1, election2, ...], allElections: [] }
+          const myElections = data.myElections;
+          const allElections = data.allElections;
+
+          const myElectionsArray = myElections.map((election: Election) => {
+            return {
+              label: election.name,
+              value: election.id,
+            }
+          });
+
+          const allElectionsArray = allElections.map((election: Election) => {
+            return {
+              label: election.name,
+              value: election.id,
+            }
+          });
+
+          setGroups([
+            {
+              label: "Your elections",
+              teams: myElectionsArray.length ? myElectionsArray : [{ label: "No elections found", value: "not-found" }],
+            },
+            ...isAdmin ? [{
+              label: "Other elections",
+              teams: allElectionsArray.length ? allElectionsArray : [{ label: "No elections found", value: "not-found" }],
+            }] : [],
+          ])
         })
         .catch((error) => {
-            console.error('Error:', error);
+          console.error('Error:', error);
         });
-}, [session])
+  }, [selectedElection, isAdmin])
 
   
   const onSubmit = (event: any) => {
@@ -143,11 +164,29 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
     })
     .then(response => response.json())
     .then(data => {
-      // handle response data
+      console.log('Success:', data);
+      const selectedElection = {
+        id: data.id,
+        label: electionName, // Assuming this is the label of the election
+      };
+      setSelectedElection(selectedElection);
+      localStorage.setItem('selectedElection', JSON.stringify(selectedElection));
+      router.push(`/admin/${data.id}`)
+      toast({
+        title: "Election created",
+        variant: "default",
+        description: "You will be redirected to the new election page, where you can manage the election."
+      })
     })
     .catch((error) => {
       console.error('Error:', error);
+      toast({
+        title: "Error",
+        variant: "destructive",
+        description: "Something went wrong. Please try again later."
+      })
     });
+    setShowNewTeamDialog(false);
   }
 
   return (
@@ -180,6 +219,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                       key={team.value}
                       onSelect={() => {
                         setSelectedElection(team)
+                        localStorage.setItem('selectedElection', team.value);
                         setOpen(false)
                         router.push(`/admin/${team.value}`)
                       }}

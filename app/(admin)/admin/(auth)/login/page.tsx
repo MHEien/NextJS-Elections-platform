@@ -1,4 +1,4 @@
-import AuthForm from "./LoginForm";
+import AuthForm from "@/components/(auth)/LoginForm";
 
 export default async function LoginPage() {
     return (

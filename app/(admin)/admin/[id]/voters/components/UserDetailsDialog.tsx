@@ -23,7 +23,7 @@ export function UserDetailsDialog({ user }: { user: VotersWithElections }) {
     }
 
     if (!user) {
-        return null
+        return null;
     }
 
     return (

@@ -1,6 +1,7 @@
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next"
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import AzureAD from "next-auth/providers/azure-ad";
+import Email from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 
@@ -15,9 +16,20 @@ export const authOptions: NextAuthOptions = {
           id: profile.oid,
           name: profile.name || profile.login,
           email: profile.email,
-          role: "VOTER"
+          role: "ADMIN"
         };
       },
+    }),
+    Email({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST as string,
+        port: Number(process.env.EMAIL_SERVER_PORT),
+        auth: {
+          user: process.env.EMAIL_SERVER_USER as string,
+          pass: process.env.EMAIL_SERVER_PASSWORD as string,
+        },
+      },
+      from: process.env.EMAIL_FROM,
     }),
   ],
   pages: {
@@ -50,10 +62,25 @@ export const authOptions: NextAuthOptions = {
         ...session.user,
         id: token?.id,
         name: token?.name,
-        role: token?.role,
+        role: token?.role
       };
       return session;
     },
+    signIn: async ({ user, account, email }) => {
+      //Only let existing users sign in with EmailProvider
+      if (account?.provider === "email") {
+        if (!user.email) {
+          return false;
+        }
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+        if (!existingUser) {
+          return false;
+        }
+      }
+      return true;
+    }
   },
 };
 
