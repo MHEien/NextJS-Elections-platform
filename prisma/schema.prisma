@@ -47,11 +47,12 @@ model User {
   image         String?
   accounts      Account[]
   hostedElections Election[] @relation("ElectionManagers")
-  votedElections Election[] @relation("ElectionVoters")
+  votedElections UserElectionVote[]
   sessions      Session[]
   votes         Vote[]
   status        String?    @default("pending")
-  role          Role       @default(VOTER)     
+  role          Role       @default(VOTER)
+  campus        Campus     @default(NATIONAL)     
 }
 
 model VerificationToken {
@@ -68,6 +69,14 @@ enum Role {
   MANAGER
 }
 
+enum Campus {
+  BERGEN
+  OSLO
+  STAVANGER
+  TRONDHEIM
+  NATIONAL
+}
+
 
 model Election {
   id          String   @id @default(cuid())
@@ -77,7 +86,7 @@ model Election {
   positions   Position[]
   campus      String
   managers    User[] @relation("ElectionManagers")
-  voters      User[] @relation("ElectionVoters")
+  voters UserElectionVote[]
 }
 
 
@@ -103,5 +112,20 @@ model Vote {
   candidateId String
   voter       User      @relation(fields: [voterId], references: [id])
   voterId     String
+  userElectionVoteId String?
+userElectionVote   UserElectionVote? @relation(fields: [userElectionVoteId], references: [id])
+
 }
 
+model UserElectionVote {
+  id        String   @id @default(cuid())
+  voterId   String   // This will store the voter_id for each election
+  userId    String
+  electionId String
+
+  user      User     @relation(fields: [userId], references: [id])
+  election  Election @relation(fields: [electionId], references: [id])
+  votes     Vote[]   // If you want to relate votes directly here
+
+  @@unique([userId, electionId]) // A user can only have one voter_id for each election
+}

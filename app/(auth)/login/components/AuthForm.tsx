@@ -32,14 +32,15 @@ export default function AuthForm() {
       if (error) {
         toast({
           title: 'Access Denied',
-          description: 'You do not have permission to vote. Please contact your administrator or the Control Committee to gain access.',
+          variant: "destructive",
+          description: 'You have not been invited to any elections yet. If this is an oversight, please contact your Administrator or Control Committee.'
         });
       }
     }
   }, [isMounted, toast]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <Card className="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
         <CardHeader>
           <div>

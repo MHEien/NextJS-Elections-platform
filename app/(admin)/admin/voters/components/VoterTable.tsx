@@ -45,6 +45,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { CommandItem } from "@/components/ui/command"
 import { Label } from "@/components/ui"
 import { UserDetailsDialog } from "./UserDetailsDialog"
+import { VoterModal } from "./VoterModal"
 
 
 
@@ -162,6 +163,7 @@ const selectedUser = voters.find(user => user.id === selectedUserId) ?? voters[0
           }
           className="max-w-sm"
         />
+        <VoterModal />
         {table.getFilteredSelectedRowModel().rows.length > 0 && (
           <>
           <Button variant="destructive" className="ml-2">

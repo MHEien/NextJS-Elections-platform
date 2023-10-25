@@ -50,6 +50,11 @@ export interface User {
     managedElections: Election[]; // add this line
   }
 
+ export type VoterDetail = {
+    user: User;
+    voterId: string;
+  };
+
 export enum Role {
   ADMIN,
   VOTER,

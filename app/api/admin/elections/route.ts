@@ -48,6 +48,8 @@ export async function GET() {
             {
                 include: {
                     managers: true,
+                    positions: true,
+                    voters: true,
                 },
             }
         );
