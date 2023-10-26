@@ -21,20 +21,45 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { useParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 type VoterDetail = {
     user: Partial<User>;
-    voterId: string;
+    voterId: number;
+    weight: number;
   };
   
 
 export function VoterModal() {
   const [voters, setVoters] = useState<VoterDetail[]>([]);
   
+  const { id } = useParams();
+
+  
   //Reset the voters state
   const resetVoters = () => {
     setVoters([]);
   };
+
+  const onSubmit = async () => {
+
+    const res = await fetch(`/api/admin/voters`, {
+      method: "POST",
+      body: JSON.stringify({ voters, electionId: id }),
+    });
+    const data = await res.json();
+    console.log(data)
+    data.successfulInvites.forEach((user) => {
+      signIn("email", {
+        email: user.email,
+        callbackUrl: `${window.location.origin}/vote`,
+        redirect: false,
+      });
+    });
+  };
+
+
 
   return (
     <Dialog>
@@ -56,6 +81,7 @@ export function VoterModal() {
                 <TableHead>Name</TableHead>
                 <TableHead>Campus</TableHead>
                 <TableHead>Voter ID</TableHead>
+                <TableHead>Weight</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -109,7 +135,20 @@ export function VoterModal() {
                       value={voterDetail.voterId || ""}
                       onChange={(e) => {
                         const newVoters = [...voters];
-                        newVoters[index].voterId = e.target.value;
+                        newVoters[index].voterId = parseInt(e.target.value);
+                        setVoters(newVoters);
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      name="weight"
+                      placeholder="Weight"
+                      value={voterDetail.weight || ""}
+                      onChange={(e) => {
+                        const newVoters = [...voters];
+                        newVoters[index].weight = parseInt(e.target.value);
                         setVoters(newVoters);
                       }}
                     />
@@ -123,8 +162,7 @@ export function VoterModal() {
         )}
         <DialogFooter>
             {voters.length > 0 && <Button onClick={resetVoters} variant="destructive">Reset</Button>}
-            <Button variant="outline">Cancel</Button>
-            <Button>Invite</Button>
+            <Button onClick={onSubmit}>Invite</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

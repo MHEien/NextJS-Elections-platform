@@ -5,7 +5,11 @@ import { useToast } from "@/components/ui";
 
 export function AdminLogin() {
 
-      return <Link onClick={() => signIn('azure-ad')} href="#">
+  const login = async () => {
+    signIn('azure-ad', { callbackUrl: `${window.location.origin}/admin` });
+  }
+
+      return <Link onClick={() => login()} href="#">
         Admin & Manager login
       </Link>
 }

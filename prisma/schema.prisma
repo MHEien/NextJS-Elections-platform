@@ -119,10 +119,10 @@ userElectionVote   UserElectionVote? @relation(fields: [userElectionVoteId], ref
 
 model UserElectionVote {
   id        String   @id @default(cuid())
-  voterId   String   // This will store the voter_id for each election
+  voterId   Int   // This will store the voter_id for each election
   userId    String
   electionId String
-
+  weight    Int      @default(1)
   user      User     @relation(fields: [userId], references: [id])
   election  Election @relation(fields: [electionId], references: [id])
   votes     Vote[]   // If you want to relate votes directly here

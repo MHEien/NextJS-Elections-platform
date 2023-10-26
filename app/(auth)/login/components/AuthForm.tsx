@@ -18,7 +18,7 @@ export default function AuthForm() {
   const { toast } = useToast();
 
   const login = async () => {
-    signIn('email', { email });
+    signIn('email', { email }, { callbackUrl: `${window.location.origin}/vote` });
   }
   useEffect(() => {
     setIsMounted(true);

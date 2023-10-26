@@ -67,7 +67,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     signIn: async ({ user, account, email }) => {
-      //Only let existing users sign in with EmailProvider
+      
       if (account?.provider === "email") {
         if (!user.email) {
           return false;
@@ -80,7 +80,7 @@ export const authOptions: NextAuthOptions = {
         }
       }
       return true;
-    }
+    },
   },
 };
 

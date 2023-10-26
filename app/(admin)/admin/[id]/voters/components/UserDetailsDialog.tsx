@@ -17,7 +17,7 @@ export function UserDetailsDialog({ user }: { user: VotersWithElections }) {
         return (
             <TableRow>
                 <TableCell className="text-gray-700 dark:text-gray-200">{item.name}</TableCell>
-                <TableCell className="text-gray-700 dark:text-gray-200">{item.date.toDateString()}</TableCell>
+                <TableCell className="text-gray-700 dark:text-gray-200">{item.date?.toDateString()}</TableCell>
             </TableRow>
         )
     }

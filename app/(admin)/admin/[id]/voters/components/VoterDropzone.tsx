@@ -9,7 +9,8 @@ import * as XLSX from 'xlsx';
 
 type VoterDetail = {
   user: Partial<User>;
-  voterId: string;
+  voterId: number;
+  weight: number;
 };
 
 
@@ -40,7 +41,7 @@ export function VoterDropzone({voters, setVoters}: VoterDropzoneProps) {
         // Validate headers
         if (jsonData.length > 0) {
           const keys = Object.keys(jsonData[0] as object);
-          const requiredHeaders = ['email', 'name', 'campus', 'voter_id'];
+          const requiredHeaders = ['email', 'name', 'campus', 'voter_id', 'weight'];
     
           if (!requiredHeaders.every(header => keys.includes(header))) {
             console.error("Invalid Excel file format");
@@ -56,7 +57,8 @@ export function VoterDropzone({voters, setVoters}: VoterDropzoneProps) {
             campus: data.campus,
             // ... add other properties if User has more fields
           },
-          voterId: data.voter_id
+          voterId: data.voter_id,
+          weight: data.weight,
         }));
     
         // Set the parsed data

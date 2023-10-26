@@ -14,6 +14,8 @@ declare module "next-auth" {
       email: string,
     }
   }
+  //Extend the user object by adding a role
+
 }
 
 declare module "next-auth/jwt" {
