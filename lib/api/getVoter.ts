@@ -1,12 +1,25 @@
 import prisma from "../prisma";
 
-export default async function getVoter(voterId: string) {
-  return await prisma.user.findUnique({
+export default async function getVoter(id: string) {
+
+  const electionsVotedIn = await prisma.user.findUnique({
     where: {
-      id: voterId,
+      id: id
     },
-    include: {
-      votes: true,
-    },
+    select: {
+      votedElections: {
+        select: {
+          election: {
+            select: {
+              name: true,
+              date: true,
+              campus: true,
+            }
+          }
+        }
+      }
+    }
   });
+
+  return electionsVotedIn;
 }

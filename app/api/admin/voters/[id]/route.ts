@@ -1,18 +1,12 @@
 import { NextResponse, NextRequest } from 'next/server'
 import prisma from '@/lib/prisma'
+import getVoter from '@/lib/api/getVoter';
+import { useRouter } from 'next/router';
 
-export async function GET(request: NextRequest, { params }): Promise<Response> {
-    const id = params.id;
-    const voterId = params.get('userId') || undefined;
+export async function GET(request: NextRequest, context: { params }) {
 
-        const voterElections = await prisma.user.findUnique({
-        where: {
-            id: voterId,
-        },
-        include: {
-            votedElections: true,
-        },
-        });
-
-    return NextResponse.json(voterElections);
+    const id = context.params.id;
+    
+    const voter = await getVoter(id);
+    return NextResponse.json(voter);
 }

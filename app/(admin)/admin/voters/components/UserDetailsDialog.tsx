@@ -12,12 +12,14 @@ import { getInitials } from "@/lib/utils";
 
 export function UserDetailsDialog({ user }: { user: VotersWithElections }) {
     
+    const [elections, setElections] = useState<Election[]>([])
 
     const renderTableItem = (item: Election) => {
+        const formattedDate = new Date(item.date).toLocaleDateString();
         return (
             <TableRow>
                 <TableCell className="text-gray-700 dark:text-gray-200">{item.name}</TableCell>
-                <TableCell className="text-gray-700 dark:text-gray-200">{item.date.toDateString()}</TableCell>
+                <TableCell className="text-gray-700 dark:text-gray-200">{formattedDate}</TableCell>
             </TableRow>
         )
     }
@@ -25,6 +27,19 @@ export function UserDetailsDialog({ user }: { user: VotersWithElections }) {
     if (!user) {
         return null
     }
+
+    useEffect(() => {
+        fetch(`/api/admin/voters/${user.id}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log('Fetched data:', data);
+                const electionsData = data.votedElections.map(votedElection => votedElection.election);
+                setElections(electionsData);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }, []);
 
     return (
         <>
@@ -36,7 +51,7 @@ export function UserDetailsDialog({ user }: { user: VotersWithElections }) {
                     </Avatar>
                     <div>
                         <DialogTitle className="text-xl font-bold dark:text-white">{user.name}</DialogTitle>
-                        <DialogDescription className="text-gray-500 dark:text-gray-300">{user.role}</DialogDescription>
+                        <DialogDescription className="text-gray-500 dark:text-gray-300">{user.email}</DialogDescription>
                     </div>
                 </DialogHeader>
                 <Card className="mt-6 bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
@@ -56,7 +71,7 @@ export function UserDetailsDialog({ user }: { user: VotersWithElections }) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {user.votedElections.map(renderTableItem)} 
+                        {elections.map(renderTableItem)}
                     </TableBody>
                 </Table>
             </DialogContent>
