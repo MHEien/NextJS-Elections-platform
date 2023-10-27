@@ -50,7 +50,7 @@ model User {
   votedElections UserElectionVote[]
   sessions      Session[]
   votes         Vote[]
-  status        String?    @default("pending")
+  onlineStatus  Boolean   @default(false)
   role          Role       @default(VOTER)
   campus        Campus     @default(NATIONAL)     
 }

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { Card } from '@/components/ui/card';
 import { CardContent } from '@/components/ui/card';
 import { Table } from '@/components/ui/table';
@@ -10,6 +10,7 @@ import { TableHeader } from '@/components/ui/table';
 import { TableRow } from '@/components/ui/table';
 import { AreaChart } from 'lucide-react';
 import { Election } from '@prisma/client';
+import HasVotedTable from './HasVotedTable';
 
 
 export default function Dashboard({ election }: { election: Election }) {
@@ -38,7 +39,8 @@ export default function Dashboard({ election }: { election: Election }) {
         {/* repeat the cards as much as you need */}
 
       </div>
-
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="col-span-2">
       <Table className="mt-8">
         <TableCaption>Election Stats</TableCaption>
         <TableHeader>
@@ -59,6 +61,11 @@ export default function Dashboard({ election }: { election: Election }) {
           {/* repeat the rows as much as you need */}
         </TableBody>
       </Table>
+      </div>
+      <div className="col-span-2">
+      <HasVotedTable electionId={election.id} />
+      </div>
+      </div>
     </div>
   )
 }
