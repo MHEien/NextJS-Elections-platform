@@ -6,12 +6,13 @@ import { Smile } from 'lucide-react';
 import React from 'react';
 import VotingCard from './_components/VoteCard';
 import prisma from '@/lib/prisma';
+import Chat from './_components/Chat';
 
 
 
 export default function VotePage({ params }: { params: { id: string } }) {
 
-const electionId = params.id;
+const electionId = "clo4cf7f60003u1bwwgug1g2e"
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black space-y-12">
@@ -21,6 +22,9 @@ const electionId = params.id;
       <div className="flex justify-center space-x-2">
         <CheckCircle className="h-5 w-5 text-green-600" />
         <span className="font-medium">Your vote has been successfully cast!</span>
+      </div>
+      <div className="flex justify-center space-x-2">
+      <Chat electionId={electionId} />
       </div>
     </div>
   );

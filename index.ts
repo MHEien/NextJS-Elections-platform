@@ -1,6 +1,7 @@
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
+import prisma from "./lib/prisma";
 
 const httpServer = http.createServer();
 
@@ -29,6 +30,51 @@ io.on("connection", (socket) => {
     console.log(data, "DATA");
     // Broadcast the vote to all users in the election room
     io.to(data.electionId).emit("receive_msg", data);
+  });
+
+  socket.on("join_chat", (data) => {
+    // Create a unique room for each voter
+    const room = `${data.electionId}-${data.userId}`;
+    socket.join(room);
+    console.log(`user with id-${socket.id} joined chat - ${room}`);
+  
+    // Join the election-specific room
+    const electionRoom = `${data.electionId}`;
+    socket.join(electionRoom);
+    console.log(`user joined chat - ${electionRoom}`);
+  });
+  
+  socket.on("send_message", async (newMessage) => {
+    console.log(newMessage, "DATA");
+  
+    try {
+      // Create a 'Chat' record and a 'Message' record in a single nested query
+      const chat = await prisma.chat.create({
+        data: {
+          electionId: newMessage.electionId,
+          messages: {
+            create: {
+              content: newMessage.message,
+              timestamp: newMessage.timestamp,
+              sender: {
+                connect: {
+                  id: newMessage.userId,
+                },
+              },
+              sentAt: newMessage.timestamp,
+            },
+          },
+        },
+      });
+  
+      console.log(chat, "CHAT");
+    } catch (e) {
+      console.log(e);
+    }
+  
+    // Emit the message to the election-specific room
+    const electionRoom = `${newMessage.electionId}`;
+    io.to(electionRoom).emit("message", newMessage);
   });
 
   socket.on("disconnect", () => {

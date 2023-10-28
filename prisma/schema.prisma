@@ -52,7 +52,9 @@ model User {
   votes         Vote[]
   onlineStatus  Boolean   @default(false)
   role          Role       @default(VOTER)
-  campus        Campus     @default(NATIONAL)     
+  campus        Campus     @default(NATIONAL)
+  sentMessages Message[] @relation("MessageToUser")     
+  userChats UserChat[] @relation("UserChats")
 }
 
 model VerificationToken {
@@ -87,6 +89,7 @@ model Election {
   campus      String
   managers    User[] @relation("ElectionManagers")
   voters UserElectionVote[]
+  chats       Chat[]
 }
 
 
@@ -128,4 +131,33 @@ model UserElectionVote {
   votes     Vote[]   // If you want to relate votes directly here
 
   @@unique([userId, electionId]) // A user can only have one voter_id for each election
+}
+
+model Chat {
+  id         String   @id @default(cuid())
+  election   Election @relation(fields: [electionId], references: [id])
+  electionId String
+  messages   Message[]
+  users      UserChat[]
+}
+
+model Message {
+  id      String   @id @default(cuid())
+  content String
+  sentAt  DateTime @default(now())
+  chat    Chat     @relation(fields: [chatId], references: [id])
+  chatId  String
+  sender  User     @relation("MessageToUser", fields: [senderId], references: [id])
+  senderId String
+  timestamp DateTime @default(now())
+}
+
+model UserChat {
+  userId    String
+  user      User     @relation("UserChats", fields: [userId], references: [id])
+  chatId    String
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  isRead    Boolean @default(false) // to track if user has read the chat
+
+  @@id([userId, chatId])
 }
