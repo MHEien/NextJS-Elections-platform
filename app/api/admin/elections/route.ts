@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-
+import { generateUniqueCode } from "./generateCode";
 
 
 export async function GET() {
@@ -107,12 +107,15 @@ export async function POST(req: NextRequest) {
     
         const { name, description, date, campus } = await req.json();
         console.log("Request JSON parsed: ", { name, description, date, campus });
+
+        const code = await generateUniqueCode();    
     
         const election = await prisma.election.create({
             data: {
                 name: name,
                 description: description,
                 date: date,
+                code: code,
                 campus: campus,
                 managers: {
                     connect: {

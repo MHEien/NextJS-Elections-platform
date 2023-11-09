@@ -48,7 +48,7 @@ export function MainNav({
         Voters
       </Link>
       <Link
-        href={`/admin/${selectedElection ? (selectedElection as any).value : ""}/candidates`}
+        href={`/admin/${selectedElection ? (selectedElection as any).value : ""}/users`}
         className={getLinkClass(`/admin/${selectedElection ? (selectedElection as any).value : ""}/candidates`)}
       >
         Users & Access

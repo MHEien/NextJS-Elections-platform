@@ -82,6 +82,7 @@ enum Campus {
 
 model Election {
   id          String   @id @default(cuid())
+  code        String   @unique
   name        String
   description String?
   date      DateTime

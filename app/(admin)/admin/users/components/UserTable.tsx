@@ -45,7 +45,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { CommandItem } from "@/components/ui/command"
 import { Label } from "@/components/ui"
 import { UserDetailsDialog } from "./UserDetailsDialog"
-import { VoterModal } from "./VoterModal"
 
 
 
@@ -71,10 +70,10 @@ export const getColumns = (handleViewDetails: (id: string) => void): ColumnDef<U
     enableHiding: false,
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "role",
+    header: "Role",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
+      <div className="capitalize">{row.getValue("role")}</div>
     ),
   },
   {
@@ -115,8 +114,7 @@ export const getColumns = (handleViewDetails: (id: string) => void): ColumnDef<U
   },
 ]
 
-export function DataTable({ voters: initialVoters }: { voters: User[]}) {
-  const [voters, setVoters] = React.useState<User[]>(initialVoters);
+export function DataTable({ users }: { users: User[]}) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -129,7 +127,7 @@ export function DataTable({ voters: initialVoters }: { voters: User[]}) {
   const [viewUserDetails, setViewUserDetails] = React.useState(false)
   const columnsArray = getColumns(handleViewDetails)
   const table = useReactTable({
-    data: voters,
+    data: users,
     columns: columnsArray,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -151,31 +149,7 @@ export function DataTable({ voters: initialVoters }: { voters: User[]}) {
     setSelectedUserId(userId);
 }
 
-async function handleDeleteVoters() {
-  const selectedRows = table.getFilteredSelectedRowModel().rows;
-  const userIds = selectedRows.map(row => row.original.id);
-
-  try {
-    const response = await fetch('/api/admin/voters', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userIds }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Error deleting voters');
-    }
-
-    // Remove the deleted voters from the state
-    setVoters(voters.filter(voter => !userIds.includes(voter.id)));
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-const selectedUser = voters.find(user => user.id === selectedUserId) ?? voters[0];
+const selectedUser = users.find(user => user.id === selectedUserId) ?? users[0];
   return (
     <Dialog open={viewUserDetails} onOpenChange={setViewUserDetails}>
     <div className="w-full">
@@ -188,10 +162,9 @@ const selectedUser = voters.find(user => user.id === selectedUserId) ?? voters[0
           }
           className="max-w-sm"
         />
-          <VoterModal />
         {table.getFilteredSelectedRowModel().rows.length > 0 && (
           <>
-          <Button variant="destructive" className="ml-2" onClick={handleDeleteVoters}>
+          <Button variant="destructive" className="ml-2">
             Delete Voters
           </Button>
           </>

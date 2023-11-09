@@ -108,7 +108,7 @@ export default function VoterTable({ electionId }: { electionId: string }) {
 
   return (
     <>
-      <Table>
+      <Table className="mt-8">
         <TableCaption className="text-lg font-semibold mb-4">Voter Status</TableCaption>
         <TableHeader>
             <TableRow>

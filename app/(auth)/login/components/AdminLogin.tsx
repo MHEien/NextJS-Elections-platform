@@ -1,6 +1,7 @@
 "use client"
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { Button } from "@/components/ui";
 import { useToast } from "@/components/ui";
 
 export function AdminLogin() {
@@ -9,7 +10,7 @@ export function AdminLogin() {
     signIn('azure-ad', { callbackUrl: `${window.location.origin}/admin` });
   }
 
-      return <Link onClick={() => login()} href="#">
+      return <Button onClick={() => login()}>
         Admin & Manager login
-      </Link>
+      </Button>
 }

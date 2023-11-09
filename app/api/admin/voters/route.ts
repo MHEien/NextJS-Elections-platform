@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from 'next/server'
 import prisma from '@/lib/prisma'
 import { User } from '@prisma/client';
 import axios from 'axios';
+import { deleteVoters } from '@/app/(admin)/admin/[id]/voters/delete-voters';
 
 export async function POST(req: NextRequest) {
     try {
@@ -97,5 +98,18 @@ export async function POST(req: NextRequest) {
     catch (err) {
         console.log(err);
         return NextResponse.json({ error: err });
+    }
+}
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const { userIds, electionId } = await req.json();
+
+        await deleteVoters(userIds, electionId);
+
+        return NextResponse.json({ message: 'Voters deleted successfully' });
+    } catch (error) {
+        console.error('An error occurred while deleting voters:', error);
+        return NextResponse.json({ error: 'An error occurred while deleting voters' });
     }
 }
