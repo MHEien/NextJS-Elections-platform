@@ -7,7 +7,6 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Check for /admin and root path
         if (
           req.url.startsWith('http://localhost:3000/admin') ||
           req.url === "http://localhost:3000/"

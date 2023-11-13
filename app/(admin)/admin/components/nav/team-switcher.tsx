@@ -182,7 +182,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
       console.error('Error:', error);
       toast({
         title: "Error",
-        variant: "destructive",
+        variant: "success",
         description: "Something went wrong. Please try again later."
       })
     });

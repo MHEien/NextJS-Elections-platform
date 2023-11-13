@@ -20,6 +20,7 @@ import io from 'socket.io-client';
 import { Socket } from 'socket.io-client';
 import { useContext } from 'react';
 import { SocketContext } from '@/lib/context/SocketProvider';
+import { useSession } from 'next-auth/react';
 
 interface VoteCardProps {
   position: Position;
@@ -77,6 +78,8 @@ function VotingCardItem({ candidate, onVote }: { candidate: VoteCardProps['candi
 
 export default function VotingCard({ electionId }: { electionId: string }) {
 
+  const session = useSession();
+
   const socket = useContext(SocketContext);
 
   useEffect(() => {
@@ -89,7 +92,7 @@ export default function VotingCard({ electionId }: { electionId: string }) {
   // Define the onVote function
   const onVote = (candidateId: string) => {
     if (socket) {
-      socket.emit('vote', { candidateId, electionId });
+      socket.emit('vote', { candidateId, electionId, sessionId: session.data?.user.id });
     }
   };
     

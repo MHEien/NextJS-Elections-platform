@@ -109,6 +109,7 @@ export async function POST(req: NextRequest) {
         console.log("Request JSON parsed: ", { name, description, date, campus });
 
         const code = await generateUniqueCode();    
+        console.log("Unique code generated: ", code)
     
         const election = await prisma.election.create({
             data: {

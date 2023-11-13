@@ -62,13 +62,12 @@ export async function POST(req: NextRequest) {
                     data: {
                         email: email,
                         name: name,
-                        status: "PENDING",
                         role: "VOTER",
                         votedElections: { // Corrected the name here
                             create: {
                                 electionId: electionId,
                                 weight: weight || 1,
-                                voterId: voterId
+                                voterId: voterId,
                             }
                         }
                     }
