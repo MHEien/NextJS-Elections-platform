@@ -73,7 +73,9 @@ export function VoterModal() {
             Here you are able to invite voters, with the capability to Preview & Edit before sending.
           </DialogDescription>
         </DialogHeader>
-        {voters.length > 0 ? (
+        {voters.length === 0 ? (
+                        <VoterDropzone voters={voters} setVoters={setVoters} />
+                    ) : null}
           <Table className="w-full overflow-x-auto">
             <TableHeader>
               <TableRow>
@@ -84,6 +86,7 @@ export function VoterModal() {
                 <TableHead>Weight</TableHead>
               </TableRow>
             </TableHeader>
+            {voters.length > 0 ? (
             <TableBody>
               {voters.map((voterDetail, index) => (
                 <TableRow key={index}>
@@ -156,13 +159,13 @@ export function VoterModal() {
                 </TableRow>
               ))}
             </TableBody>
+            ) : null}
           </Table>
-        ) : (
-          <VoterDropzone voters={voters} setVoters={setVoters} />
-        )}
         <DialogFooter>
-            {voters.length > 0 && <Button onClick={resetVoters} variant="destructive">Reset</Button>}
-            <Button onClick={onSubmit}>Invite</Button>
+          <Button variant="outline" onClick={resetVoters}>
+            Reset
+          </Button>
+          <Button onClick={onSubmit}>Invite</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
